@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Transaction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 2rem auto;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 2rem;
+            border: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 0.75rem 2.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            border-radius: 25px;
+            padding: 0.75rem 2.5rem;
+            font-weight: 600;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .input-group .form-control {
+            border-left: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-plus-circle"></i> Add New Transaction</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="transactionForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="type" class="form-label">
+                                    <i class="fas fa-exchange-alt"></i> Transaction Type
+                                </label>
+                                <select name="type" id="type" class="form-select" required>
+                                    <option value="">-- Select Type --</option>
+                                    <option value="income">💰 Income</option>
+                                    <option value="expense">💸 Expense</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">
+                                    <i class="fas fa-rupee-sign"></i> Amount
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" name="amount" id="amount" class="form-control" 
+                                           placeholder="0.00" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="date" class="form-label">
+                                    <i class="far fa-calendar"></i> Date
+                                </label>
+                                <input type="date" name="date" id="date" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="payment_mode" class="form-label">
+                                    <i class="fas fa-credit-card"></i> Payment Mode
+                                </label>
+                                <select name="payment_mode" id="payment_mode" class="form-select" required>
+                                    <option value="">-- Select Mode --</option>
+                                    <option value="cash">💵 Cash</option>
+                                    <option value="bank">🏦 Bank</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">
+                                    <i class="fas fa-tag"></i> Category
+                                </label>
+                                <input type="text" name="category" id="category" class="form-control" 
+                                       placeholder="e.g., Food, Rent, Salary" required 
+                                       list="categoryOptions">
+                                <datalist id="categoryOptions">
+                                    <option value="Food">
+                                    <option value="Transport">
+                                    <option value="Shopping">
+                                    <option value="Bills">
+                                    <option value="Entertainment">
+                                    <option value="Health">
+                                    <option value="Salary">
+                                    <option value="Investment">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="description" class="form-label">
+                                    <i class="fas fa-file-alt"></i> Description
+                                </label>
+                                <input type="text" name="description" id="description" class="form-control" 
+                                       placeholder="Optional details">
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-gradient me-2">
+                                <i class="fas fa-check"></i> Add Transaction
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
+        // Form validation and UX enhancements
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            const amount = document.getElementById('amount').value;
+            if (parseFloat(amount) <= 0) {
+                e.preventDefault();
+                alert('Amount must be greater than 0');
+                return false;
+            }
+        });
+
+        // Auto-focus on type field
+        document.getElementById('type').focus();
+    </script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+:root {
+    --primary-color: #4e73df;
+    --success-color: #1cc88a;
+    --danger-color: #e74a3b;
+    --warning-color: #f6c23e;
+    --info-color: #36b9cc;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.container-main {
+    max-width: 1400px;
+    margin: 1rem auto;
+    padding: 0 1rem;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: white;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card {
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 140px;
+}
+
+.summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+}
+
+.summary-card h4 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+}
+
+.summary-card h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    word-break: break-word;
+}
+
+.summary-card i {
+    font-size: 2.5rem;
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    opacity: 0.2;
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+    color: white;
+}
+
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+    color: white;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    color: white;
+}
+
+.chart-card {
+    padding: 1.5rem;
+    height: auto;
+    min-height: 350px;
+}
+
+.chart-card h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+.table-card {
+    padding: 1.5rem;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 1rem 0.75rem;
+}
+
+.table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fc;
+}
+
+.table tbody td {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+.badge {
+    padding: 0.35rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.7rem;
+}
+
+.btn-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.flash-message {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1050;
+    min-width: 300px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+}
+
+.modal-header {
+    border-radius: 15px 15px 0 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.modal-body .form-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.modal-body .form-control,
+.modal-body .form-select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 992px) {
+    .chart-card {
+        min-height: 320px;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container-main {
+        margin: 0.5rem auto;
+        padding: 0 0.75rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .summary-card {
+        padding: 1.25rem;
+        min-height: 120px;
+    }
+
+    .summary-card h4 {
+        font-size: 0.75rem;
+    }
+
+    .summary-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .summary-card i {
+        font-size: 2rem;
+        right: 0.75rem;
+        bottom: 0.75rem;
+    }
+
+    .chart-card {
+        padding: 1rem;
+        min-height: 300px;
+    }
+
+    .chart-card h5 {
+        font-size: 0.9rem;
+    }
+
+    .chart-container {
+        height: 220px;
+    }
+
+    .table-card {
+        padding: 1rem;
+    }
+
+    .table thead th {
+        font-size: 0.7rem;
+        padding: 0.75rem 0.5rem;
+    }
+
+    .table tbody td {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-gradient {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .flash-message {
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+    }
+
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .summary-card h2 {
+        font-size: 1.25rem;
+    }
+
+    .chart-container {
+        height: 200px;
+    }
+
+    .table {
+        font-size: 0.8rem;
+    }
+
+    .table thead th,
+    .table tbody td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+
+/* Ensure table doesn't break layout on small screens */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Button group spacing on mobile */
+@media (max-width: 576px) {
+    .btn-group-sm .btn {
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .btn-group-sm .btn i {
+        font-size: 0.75rem;
+    }
+}
