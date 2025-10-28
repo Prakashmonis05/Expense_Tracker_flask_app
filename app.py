@@ -7,6 +7,7 @@ from models import db, User, Expense
 from config import Config
 from datetime import datetime
 import json
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -58,74 +59,131 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # Calculate summary
-    total_income = db.session.query(func.sum(Expense.amount))\
-                     .filter_by(user_id=current_user.id, type='income').scalar() or 0
-    total_expense = db.session.query(func.sum(Expense.amount))\
-                      .filter_by(user_id=current_user.id, type='expense').scalar() or 0
-    savings = total_income - total_expense
-
-    # Category-wise expense data
+    user_id = current_user.id
+    filter_option = request.args.get('filter', 'all')
+    today = datetime.now().date()
+    
+    # Base query
+    query = Expense.query.filter_by(user_id=user_id)
+    
+    # --- Date Filters ---
+    if filter_option == 'today':
+        query = query.filter(Expense.date == today)
+    elif filter_option == '7days':
+        start_date = today - timedelta(days=7)
+        query = query.filter(Expense.date >= start_date)
+    elif filter_option == '30days':
+        start_date = today - timedelta(days=30)
+        query = query.filter(Expense.date >= start_date)
+    elif filter_option == 'thismonth':
+        start_date = today.replace(day=1)
+        query = query.filter(Expense.date >= start_date)
+    elif filter_option == 'lastmonth':
+        first_day_this_month = today.replace(day=1)
+        last_month_end = first_day_this_month - timedelta(days=1)
+        start_date = last_month_end.replace(day=1)
+        query = query.filter(Expense.date.between(start_date, last_month_end))
+    
+    # Get filtered expenses
+    expenses = query.order_by(Expense.date.desc()).all()
+    
+    # --- Last 30 Days Income and Expense ---
+    thirty_days_ago = today - timedelta(days=30)
+    
+    last30_income = db.session.query(func.sum(Expense.amount)).filter(
+        Expense.user_id == user_id,
+        Expense.type == 'income',
+        Expense.date >= thirty_days_ago
+    ).scalar() or 0
+    
+    last30_expense = db.session.query(func.sum(Expense.amount)).filter(
+        Expense.user_id == user_id,
+        Expense.type == 'expense',
+        Expense.date >= thirty_days_ago
+    ).scalar() or 0
+    
+    # --- Category-wise expense data ---
     category_data = db.session.query(Expense.category, func.sum(Expense.amount))\
-                     .filter_by(user_id=current_user.id, type='expense')\
-                     .group_by(Expense.category).all()
+        .filter_by(user_id=user_id, type='expense')\
+        .group_by(Expense.category).all()
     categories = [c[0] for c in category_data]
     category_values = [float(c[1]) for c in category_data]
-    limit = request.args.get('limit', default=10, type=int)
-    expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.date.desc()).limit(limit).all()
-    total_count = Expense.query.filter_by(user_id=current_user.id).count()
-    # Monthly expense trend data
+    
+    # --- Monthly trends ---
     expense_trend_data = db.session.query(
         func.strftime('%Y-%m', Expense.date).label('month'),
         func.sum(Expense.amount)
-    ).filter_by(user_id=current_user.id, type='expense')\
+    ).filter_by(user_id=user_id, type='expense')\
      .group_by('month')\
      .order_by('month').all()
     
-    # Monthly income trend data
     income_trend_data = db.session.query(
         func.strftime('%Y-%m', Expense.date).label('month'),
         func.sum(Expense.amount)
-    ).filter_by(user_id=current_user.id, type='income')\
+    ).filter_by(user_id=user_id, type='income')\
      .group_by('month')\
      .order_by('month').all()
     
-    # Get all unique months from both income and expense
+    # Get all unique months
     all_months = sorted(set(
         [t[0] for t in expense_trend_data] + 
         [t[0] for t in income_trend_data]
     ))
     
-    # Create dictionaries for easy lookup
     expense_dict = {t[0]: float(t[1]) for t in expense_trend_data}
     income_dict = {t[0]: float(t[1]) for t in income_trend_data}
     
-    # Build aligned arrays
     months = all_months
     monthly_expenses = [expense_dict.get(month, 0) for month in all_months]
     monthly_income = [income_dict.get(month, 0) for month in all_months]
     monthly_savings = [monthly_income[i] - monthly_expenses[i] for i in range(len(all_months))]
-
-    # Recent transactions
-    expenses = Expense.query.filter_by(user_id=current_user.id)\
-                      .order_by(Expense.date.desc()).all()
-
+    
+    # --- Payment mode balances (all-time) ---
+    cash_income = db.session.query(func.sum(Expense.amount)).filter_by(
+        payment_mode='cash', type='income', user_id=user_id
+    ).scalar() or 0
+    
+    cash_expense = db.session.query(func.sum(Expense.amount)).filter_by(
+        payment_mode='cash', type='expense', user_id=user_id
+    ).scalar() or 0
+    
+    cash_balance = cash_income - cash_expense
+    
+    bank_income = db.session.query(func.sum(Expense.amount)).filter_by(
+        payment_mode='bank', type='income', user_id=user_id
+    ).scalar() or 0
+    
+    bank_expense = db.session.query(func.sum(Expense.amount)).filter_by(
+        payment_mode='bank', type='expense', user_id=user_id
+    ).scalar() or 0
+    
+    bank_balance = bank_income - bank_expense
+    total_balance = cash_balance + bank_balance
+    
     return render_template(
         'dashboard.html',
-        total_income=total_income,
-        total_expense=total_expense,
-        savings=savings,
+        expenses=expenses,
+        last30_income=last30_income,
+        last30_expense=last30_expense,
+        total_balance=total_balance,
+        bank_balance=bank_balance,
+        cash_balance=cash_balance,
         categories=categories,
         category_values=category_values,
         months=months,
         monthly_expenses=monthly_expenses,
         monthly_income=monthly_income,
         monthly_savings=monthly_savings,
-        expenses=expenses,total_count=total_count, limit=limit
+        filter=filter_option
     )
+
+
+
+
 
 @app.route('/add', methods=['GET', 'POST'])
 @login_required
@@ -209,6 +267,6 @@ def edit_transaction(id):
 
 
 if __name__ == '__main__':
-    from waitress import serve
-    serve(app, host='0.0.0.0', port=5000)
-    # app.run(debug=True)
+    # from waitress import serve
+    # serve(app, host='0.0.0.0', port=5000)
+    app.run(debug=True)

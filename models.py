@@ -17,3 +17,4 @@ class Expense(db.Model):
     category = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(200))
     amount = db.Column(db.Float, nullable=False)
+       # e.g., "Income" or "Expense"
