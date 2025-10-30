@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 from functools import wraps
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Keep this safe
+app.permanent_session_lifetime = timedelta(days=365) 
 app.config.from_object(Config)
 
 db.init_app(app)
@@ -45,6 +47,9 @@ def balance_required(f):
 
 @app.route('/')
 def home():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    
     return render_template('index.html')
 
 # ✅ UPDATED: Register route - auto login and redirect to set balance
@@ -71,32 +76,49 @@ def register():
     return render_template('register.html')
 
 # ✅ UPDATED: Login route - check balance status
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         user = User.query.filter_by(username=username).first()
         
         if user and bcrypt.check_password_hash(user.password, password):
-            login_user(user)
-            
-            # ✅ Check if user has "Initial Balance" transaction
+            session.permanent = True  # keeps the session active
+            # ✅ Enable remember=True
+            login_user(user, remember=True)
+
+            # ✅ Check "Initial Balance"
             has_initial_balance = Expense.query.filter_by(
                 user_id=user.id,
                 category='Initial Balance'
             ).first()
-            
+
             if not has_initial_balance:
                 flash('Please set your initial balance to continue.', 'info')
                 return redirect(url_for('set_initial_balance'))
-            
+
             flash('Welcome back!', 'success')
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid credentials', 'danger')
     
     return render_template('login.html')
+
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'  # redirect here if not logged in
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 
 # ✅ NEW: Set Initial Balance Route
 @app.route('/set-initial-balance', methods=['GET', 'POST'])
@@ -354,8 +376,11 @@ def edit_transaction(id):
 @login_required
 def logout():
     logout_user()
+    
     flash('You have been logged out successfully.', 'info')
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    from waitress import serve
+    serve(app, host='0.0.0.0', port=5000)
