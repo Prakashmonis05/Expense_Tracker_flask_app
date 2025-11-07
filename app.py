@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
-from models import db, User, Expense
+from models import db, Account, Expense
 from config import Config
 from datetime import datetime, timedelta
 from functools import wraps
@@ -20,7 +20,7 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return Account.query.get(int(user_id))
 
 with app.app_context():
     db.create_all()
@@ -32,9 +32,9 @@ def balance_required(f):
         if not current_user.is_authenticated:
             return redirect(url_for('login'))
         
-        # ✅ Check if user has "Initial Balance" transaction
+        # ✅ Check if account has "Initial Balance" transaction
         has_initial_balance = Expense.query.filter_by(
-            user_id=current_user.id,
+            account_id=current_user.id,
             category='Initial Balance'
         ).first()
         
@@ -59,12 +59,12 @@ def register():
         username = request.form['username']
         password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
         
-        existing_user = User.query.filter_by(username=username).first()
+        existing_user = Account.query.filter_by(username=username).first()
         if existing_user:
             flash('Username already exists!', 'danger')
             return render_template('register.html')
         
-        user = User(username=username, password=password)
+        user = Account(username=username, password=password)
         db.session.add(user)
         db.session.commit()
         
@@ -76,7 +76,6 @@ def register():
     return render_template('register.html')
 
 # ✅ UPDATED: Login route - check balance status
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -85,16 +84,15 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        user = Account.query.filter_by(username=username).first()
         
         if user and bcrypt.check_password_hash(user.password, password):
             session.permanent = True  # keeps the session active
-            # ✅ Enable remember=True
             login_user(user, remember=True)
 
             # ✅ Check "Initial Balance"
             has_initial_balance = Expense.query.filter_by(
-                user_id=user.id,
+                account_id=user.id,
                 category='Initial Balance'
             ).first()
 
@@ -109,16 +107,13 @@ def login():
     
     return render_template('login.html')
 
-
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'  # redirect here if not logged in
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
-
+    return Account.query.get(int(user_id))
 
 # ✅ NEW: Set Initial Balance Route
 @app.route('/set-initial-balance', methods=['GET', 'POST'])
@@ -138,7 +133,7 @@ def set_initial_balance():
             # Add cash balance as income transaction
             if cash_balance > 0:
                 initial_cash = Expense(
-                    user_id=current_user.id,
+                    account_id=current_user.id,
                     date=today,
                     type='income',
                     payment_mode='cash',
@@ -151,7 +146,7 @@ def set_initial_balance():
             # Add bank balance as income transaction
             if bank_balance > 0:
                 initial_bank = Expense(
-                    user_id=current_user.id,
+                    account_id=current_user.id,
                     date=today,
                     type='income',
                     payment_mode='bank',
@@ -175,12 +170,12 @@ def set_initial_balance():
 @app.route('/dashboard')
 @balance_required
 def dashboard():
-    user_id = current_user.id
+    account_id = current_user.id
     filter_option = request.args.get('filter', 'all')
     today = datetime.now().date()
     
     # Base query
-    query = Expense.query.filter_by(user_id=user_id)
+    query = Expense.query.filter_by(account_id=account_id)
     
     # --- Date Filters ---
     if filter_option == 'today':
@@ -207,38 +202,42 @@ def dashboard():
     thirty_days_ago = today - timedelta(days=30)
     
     last30_income = db.session.query(func.sum(Expense.amount)).filter(
-        Expense.user_id == user_id,
+        Expense.account_id == account_id,
         Expense.type == 'income',
         Expense.date >= thirty_days_ago
     ).scalar() or 0
     
     last30_expense = db.session.query(func.sum(Expense.amount)).filter(
-        Expense.user_id == user_id,
+        Expense.account_id == account_id,
         Expense.type == 'expense',
         Expense.date >= thirty_days_ago
     ).scalar() or 0
     
     # --- Category-wise expense data ---
     category_data = db.session.query(Expense.category, func.sum(Expense.amount))\
-        .filter_by(user_id=user_id, type='expense')\
+        .filter_by(account_id=account_id, type='expense')\
         .group_by(Expense.category).all()
     categories = [c[0] for c in category_data]
     category_values = [float(c[1]) for c in category_data]
     
     # --- Monthly trends ---
     expense_trend_data = db.session.query(
-        func.strftime('%Y-%m', Expense.date).label('month'),
-        func.sum(Expense.amount)
-    ).filter_by(user_id=user_id, type='expense')\
-     .group_by('month')\
-     .order_by('month').all()
+    func.to_char(Expense.date.cast(db.Date), 'YYYY-MM').label('month'),
+    func.sum(Expense.amount)
+).filter(
+    Expense.account_id == account_id,
+    Expense.type == 'expense'
+).group_by('month').order_by('month')
+
     
     income_trend_data = db.session.query(
-        func.strftime('%Y-%m', Expense.date).label('month'),
-        func.sum(Expense.amount)
-    ).filter_by(user_id=user_id, type='income')\
-     .group_by('month')\
-     .order_by('month').all()
+    func.to_char(Expense.date.cast(db.Date), 'YYYY-MM').label('month'),
+    func.sum(Expense.amount)
+).filter(
+    Expense.account_id == account_id,
+    Expense.type == 'income'
+).group_by('month').order_by('month')
+
     
     # Get all unique months
     all_months = sorted(set(
@@ -256,21 +255,21 @@ def dashboard():
     
     # --- Payment mode balances (all-time) ---
     cash_income = db.session.query(func.sum(Expense.amount)).filter_by(
-        payment_mode='cash', type='income', user_id=user_id
+        payment_mode='cash', type='income', account_id=account_id
     ).scalar() or 0
     
     cash_expense = db.session.query(func.sum(Expense.amount)).filter_by(
-        payment_mode='cash', type='expense', user_id=user_id
+        payment_mode='cash', type='expense', account_id=account_id
     ).scalar() or 0
     
     cash_balance = cash_income - cash_expense
     
     bank_income = db.session.query(func.sum(Expense.amount)).filter_by(
-        payment_mode='bank', type='income', user_id=user_id
+        payment_mode='bank', type='income', account_id=account_id
     ).scalar() or 0
     
     bank_expense = db.session.query(func.sum(Expense.amount)).filter_by(
-        payment_mode='bank', type='expense', user_id=user_id
+        payment_mode='bank', type='expense', account_id=account_id
     ).scalar() or 0
     
     bank_balance = bank_income - bank_expense
@@ -306,7 +305,7 @@ def add_transaction():
         amount = float(request.form['amount'])
 
         new_entry = Expense(
-            user_id=current_user.id,
+            account_id=current_user.id,
             date=date,
             type=type,
             payment_mode=payment_mode,
@@ -326,7 +325,7 @@ def add_transaction():
 def delete_expense(id):
     try:
         expense = Expense.query.get_or_404(id)
-        if expense.user_id != current_user.id:
+        if expense.account_id != current_user.id:
             return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
         db.session.delete(expense)
         db.session.commit()
@@ -338,7 +337,7 @@ def delete_expense(id):
 @app.route('/api/transactions')
 @balance_required
 def get_transactions():
-    expenses = Expense.query.filter_by(user_id=current_user.id)\
+    expenses = Expense.query.filter_by(account_id=current_user.id)\
                       .order_by(Expense.date.desc()).all()
     return jsonify([{
         'id': e.id,
@@ -355,7 +354,7 @@ def get_transactions():
 def edit_transaction(id):
     expense = Expense.query.get_or_404(id)
     
-    if expense.user_id != current_user.id:
+    if expense.account_id != current_user.id:
         return jsonify({'status': 'error', 'message': 'Unauthorized'}), 403
 
     data = request.get_json()
@@ -370,13 +369,10 @@ def edit_transaction(id):
     db.session.commit()
     return jsonify({'status': 'success'})
 
-
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    
     flash('You have been logged out successfully.', 'info')
     return redirect(url_for('home'))
 
