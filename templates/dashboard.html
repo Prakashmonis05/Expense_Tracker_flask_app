@@ -586,151 +586,197 @@
         }
 
         /* Mobile Transaction Layout - Add before the closing tag */
-    @media (max-width: 768px) {
-    /* Hide desktop table view on mobile */
-    .table-responsive {
-    display: none;
-    }
+        @media (max-width: 768px) {
 
-    /* Show mobile card view */
-    #mobileTransactionList {
-    display: block;
-    }
+            /* Hide desktop table view on mobile */
+            .table-responsive {
+                display: none;
+            }
 
-    .mobile-transaction-item {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: var(--transition);
-    }
+            /* Show mobile card view */
+            #mobileTransactionList {
+                display: block;
+            }
 
-    .mobile-transaction-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-    }
+            .mobile-transaction-item {
+                background-color: #ffffff;
+                border-radius: 12px;
+                padding: 14px 16px;
+                margin-bottom: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                transition: var(--transition);
+            }
 
-    .mobile-transaction-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    }
+            .mobile-transaction-item:hover {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+                transform: translateY(-2px);
+            }
 
-    .mobile-category-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    }
+            .mobile-transaction-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
 
-    .mobile-category-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-    }
+            .mobile-category-section {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex: 1;
+            }
 
-    .mobile-category-icon.expense {
-    background-color: #ffe5e5;
-    color: #e74a3b;
-    }
+            .mobile-category-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                flex-shrink: 0;
+            }
 
-    .mobile-category-icon.income {
-    background-color: #d4edda;
-    color: #1cc88a;
-    }
+            .mobile-category-icon.expense {
+                background-color: #ffe5e5;
+                color: #e74a3b;
+            }
 
-    .mobile-category-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    line-height: 1.3;
-    }
+            .mobile-category-icon.income {
+                background-color: #d4edda;
+                color: #1cc88a;
+            }
 
-    .mobile-amount {
-    font-size: 16px;
-    font-weight: 700;
-    white-space: nowrap;
-    margin-left: 10px;
-    }
+            .mobile-category-name {
+                font-size: 14px;
+                font-weight: 600;
+                color: #333;
+                line-height: 1.3;
+            }
 
-    .mobile-amount.expense {
-    color: #e74a3b;
-    }
+            .mobile-amount {
+                font-size: 16px;
+                font-weight: 700;
+                white-space: nowrap;
+                margin-left: 10px;
+            }
 
-    .mobile-amount.income {
-    color: #1cc88a;
-    }
+            .mobile-amount.expense {
+                color: #e74a3b;
+            }
 
-    .mobile-transaction-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-left: 50px;
-    font-size: 13px;
-    color: #6c757d;
-    }
+            .mobile-amount.income {
+                color: #1cc88a;
+            }
 
-    .mobile-payment-type {
-    background-color: #f0f0f0;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-weight: 500;
-    text-transform: capitalize;
-    }
+            .mobile-transaction-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-left: 50px;
+                font-size: 13px;
+                color: #6c757d;
+            }
 
-    .mobile-transaction-date {
-    font-weight: 500;
-    }
+            .mobile-payment-type {
+                background-color: #f0f0f0;
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-weight: 500;
+                text-transform: capitalize;
+            }
 
-    .mobile-action-btn {
-    margin-top: 10px;
-    padding-left: 50px;
-    display: flex;
-    gap: 8px;
-    }
+            .mobile-transaction-date {
+                font-weight: 500;
+            }
 
-    .mobile-action-btn .btn {
-    padding: 6px 12px;
-    font-size: 12px;
-    }
-    }
+            .mobile-action-btn {
+                margin-top: 10px;
+                padding-left: 50px;
+                display: flex;
+                gap: 8px;
+            }
 
-    /* Desktop view - hide mobile list */
-    @media (min-width: 769px) {
-    #mobileTransactionList {
-    display: none;
-    }
-    }
+            .mobile-action-btn .btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
 
+        /* Desktop view - hide mobile list */
+        @media (min-width: 769px) {
+            #mobileTransactionList {
+                display: none;
+            }
+        }
     </style>
     <script>
         let showingAll = false;
+
+        // =====================================
+        // CATEGORY ARRAYS FOR EDIT MODAL
+        // =====================================
+        const incomeCategories = [
+            "Salary", "Bonus", "Freelance", "Interest", "Investment Returns",
+            "Rent Income", "Business Profit", "Gift Received", "Refund", "Other Income"
+        ];
+
+        const expenseCategories = [
+            "Food", "Groceries", "Transportation", "Shopping", "Entertainment",
+            "Utilities", "Bills", "Rent", "EMI", "Health", "Medicine", "Education",
+            "Insurance", "Travel", "Recharge", "Maintenance",
+            "Fuel", "Donation", "Tax", "Miscellaneous"
+        ];
+
+        const investmentCategories = [
+            "Mutual Funds",
+            "Stocks"
+        ];
         // Open Edit Modal with transaction data
         function openEditModal(id, date, type, payment_mode, category, description, amount) {
             document.getElementById('expenseId').value = id;
 
-            // ✅ Set max date to today
             const dateInput = document.getElementById('editDate');
             const today = new Date().toISOString().split('T')[0];
             dateInput.max = today;
             dateInput.value = date;
 
-            document.getElementById('editCategory').value = category;
             document.getElementById('editDescription').value = description || '';
             document.getElementById('editAmount').value = amount;
-            document.getElementById('editType').value = type.toLowerCase();
             document.getElementById('editPayment').value = payment_mode.toLowerCase();
+            document.getElementById('editType').value = type.toLowerCase();
+
+            // Load categories based on type
+            loadEditCategories(type.toLowerCase(), category);
 
             const modal = new bootstrap.Modal(document.getElementById('editModal'));
             modal.show();
         }
+
+
+        function loadEditCategories(type, selectedCategory) {
+            const categorySelect = document.getElementById('editCategory');
+            categorySelect.innerHTML = '<option value="">-- Select Category --</option>';
+
+            let categories = [];
+
+            if (type === 'income') categories = incomeCategories;
+            else if (type === 'expense') categories = expenseCategories;
+            else if (type === 'investment') categories = investmentCategories;
+
+            categories.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+
+                if (c === selectedCategory) {
+                    opt.selected = true;
+                }
+
+                categorySelect.appendChild(opt);
+            });
+        }
+
 
         // Show alert message
         function showAlert(message, type) {
@@ -784,6 +830,8 @@
             const modal = new bootstrap.Modal(document.getElementById('viewModal'));
             modal.show();
         }
+
+
 
         function showAllTransactions() {
             const transactionRows = document.querySelectorAll('.transaction-row');
@@ -900,6 +948,7 @@
                 });
             }
 
+
             // Savings Chart
             const savingsCtx = document.getElementById('savingsChart');
             if (typeof Chart !== 'undefined' && savingsCtx && months.length > 0) {
@@ -991,6 +1040,10 @@
                         });
                 });
             }
+            document.getElementById('editType').addEventListener('change', function () {
+                loadEditCategories(this.value, null);
+            });
+
 
             // ✅ Show only first 10 transactions initially (MOVED OUTSIDE)
             const transactionRows = document.querySelectorAll('.transaction-row');
@@ -1082,20 +1135,33 @@
 
                 <div class="col-12 col-md-4">
                     <div class="card summary-card bg-gradient-primary text-center">
-                        <h4>Balance</h4>
-                        <h2>₹{{"%.2f"|format( total_balance)}}</h2>
+                        <h4>Total Balance</h4>
+                        <h2>₹{{ "%.2f"|format(total_balance) }}</h2>
+
                         <div class="d-flex justify-content-between px-4 mt-3">
                             <div>
                                 <h6 class="text-secondary mb-0">Bank</h6>
-                                <p class="fw-semibold mb-0 text-light">₹{{ "%.2f"|format(bank_balance) }}</p>
+                                <p class="fw-semibold mb-0 text-light">
+                                    ₹{{ "%.2f"|format(bank_balance) }}
+                                </p>
                             </div>
+
                             <div>
                                 <h6 class="text-secondary mb-0">Cash</h6>
-                                <p class="fw-semibold mb-0 text-light">₹{{ "%.2f"|format(cash_balance) }}</p>
+                                <p class="fw-semibold mb-0 text-light">
+                                    ₹{{ "%.2f"|format(cash_balance) }}
+                                </p>
+                            </div>
+                            <div>
+                                <h6 class="text-secondary mb-0">Investment</h6>
+                                <p class="fw-semibold mb-0 text-light">
+                                    ₹{{ "%.2f"|format(total_invested) }}
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -1148,10 +1214,17 @@
                             <td class="d-none d-sm-table-cell">{{ expense.payment_mode }}</td>
                             <td class="fw-bold">₹{{ expense.amount }}</td>
                             <td class="d-none d-sm-table-cell">
-                                <span
-                                    class="badge {% if expense.type == 'income' %}bg-success{% else %}bg-danger{% endif %}">
+                                <span class="badge 
+    {% if expense.type == 'income' %}
+        bg-success
+    {% elif expense.type == 'expense' %}
+        bg-danger
+    {% else %}
+        bg-warning text-dark
+    {% endif %}">
                                     {{ expense.type }}
                                 </span>
+
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
@@ -1177,7 +1250,7 @@
             <!-- Mobile Card View -->
             <div id="mobileTransactionList">
                 {% for expense in expenses %}
-                <div class="mobile-transaction-item transaction-row-mobile" >
+                <div class="mobile-transaction-item transaction-row-mobile">
                     <div class="mobile-transaction-header">
                         <div class="mobile-category-section">
                             <div
@@ -1326,7 +1399,10 @@
 
                         <div class="mb-3">
                             <label for="editCategory" class="form-label">Category</label>
-                            <input type="text" id="editCategory" class="form-control" required>
+                            <select id="editCategory" class="form-select" required>
+                                <option value="">-- Select Category --</option>
+                            </select>
+
                         </div>
 
                         <div class="mb-3">
@@ -1350,6 +1426,7 @@
                                 <option value="">Select Type</option>
                                 <option value="income">Income</option>
                                 <option value="expense">Expense</option>
+                                <option value="investment">Investment</option>
                             </select>
                         </div>
 

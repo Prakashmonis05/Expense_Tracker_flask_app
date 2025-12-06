@@ -267,13 +267,23 @@ def dashboard():
     bank_income = db.session.query(func.sum(Expense.amount)).filter_by(
         payment_mode='bank', type='income', account_id=account_id
     ).scalar() or 0
+
+    total_investment = db.session.query(func.sum(Expense.amount)).filter_by(
+    type='investment',
+    account_id=account_id
+).scalar() or 0
     
     bank_expense = db.session.query(func.sum(Expense.amount)).filter_by(
         payment_mode='bank', type='expense', account_id=account_id
     ).scalar() or 0
     
-    bank_balance = bank_income - bank_expense
+    bank_balance = bank_income - bank_expense - total_investment
+
     total_balance = cash_balance + bank_balance
+    
+
+ # store investment rows separately
+
     
     return render_template(
         'dashboard.html',
@@ -289,7 +299,8 @@ def dashboard():
         monthly_expenses=monthly_expenses,
         monthly_income=monthly_income,
         monthly_savings=monthly_savings,
-        filter=filter_option
+        filter=filter_option,
+        total_invested=total_investment
     )
 
 # ✅ UPDATED: Add transaction with balance_required
