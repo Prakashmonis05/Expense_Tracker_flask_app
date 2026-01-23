@@ -52,6 +52,11 @@ def home():
     
     return render_template('index.html')
 
+@app.route("/health")
+def health():
+    return "OK", 200
+
+
 # ✅ UPDATED: Register route - auto login and redirect to set balance
 @app.route('/register', methods=['GET', 'POST'])
 def register():
