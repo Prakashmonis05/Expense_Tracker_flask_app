@@ -7,9 +7,10 @@ from models import db, Account, Expense
 from config import Config
 from datetime import datetime, timedelta
 from functools import wraps
+import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Keep this safe
+app.secret_key = os.getenv("SECRET_KEY") # Keep this safe
 app.permanent_session_lifetime = timedelta(days=365) 
 app.config.from_object(Config)
 
